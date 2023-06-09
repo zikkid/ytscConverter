@@ -48,5 +48,5 @@ def process_file(file_path):
             youtube_link = line.strip()
             convert_to_mp3(youtube_link)
 
-file_path = 'links.txt'
+file_path = './links.txt'
 process_file(file_path)
