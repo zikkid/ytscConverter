@@ -3,6 +3,7 @@ from pytube import YouTube
 from pytube.exceptions import RegexMatchError
 from sclib import SoundcloudAPI
 import requests
+import re
 
 def convert_to_mp3(url, output_dir=None):
     try:
@@ -43,10 +44,21 @@ def convert_to_mp3(url, output_dir=None):
         print(f"an error occured: {e}")
 
 def process_file(file_path):
+    youtube_regex = r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.?be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})'
+    soundcloud_regex = r'(?:https?:\/\/)?(?:www\.)?(?:soundcloud\.com)\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)'
+
+
     with open(file_path, 'r') as file:
         for line in file:
-            youtube_link = line.strip()
-            convert_to_mp3(youtube_link)
+            link = line.strip()
+
+            if line.startswith("#"):
+                continue
+
+            if re.match(youtube_regex, link) or re.match(soundcloud_regex, link):
+                convert_to_mp3(link)
+            else:
+                print(f"ignoring unsupported url: {link}")
 
 file_path = './links.txt'
 process_file(file_path)
