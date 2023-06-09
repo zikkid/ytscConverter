@@ -9,7 +9,7 @@ easy2use youtube and soundcloud mp3 converter
   - run `pip install soundcloud-lib` in your terminal
 
 ### How to use
-structure the folder `links.txt` in following way, with linebreaks between every link, and run the python script in main.py.\
+structure `links.txt` in following way, with linebreaks between every link, and run the python script in main.py.\
 lines starting with "#" will be ignored, and can be used to structure for larger operations.
 >\# Mozart \
 >ht<span>tps://ww</span>w.youtube.com/watch?v=SKityhJZDV0 \
