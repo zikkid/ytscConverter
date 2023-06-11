@@ -1,5 +1,5 @@
 import os
-from pytube import YouTube
+from pytube import YouTube, Playlist
 from pytube.exceptions import RegexMatchError
 from sclib import SoundcloudAPI
 import requests
@@ -13,9 +13,9 @@ def convert_to_mp3(url, output_dir=None):
             video = youtube.streams.filter(only_audio=True).first()
 
             if output_dir:
-                mp3_file = os.path.join(output_dir, f"{youtube.title}.mp3")
+                mp3_file = os.path.join(output_dir, f"{sanitize_title(youtube.title)}.mp3")
             else:
-                mp3_file = os.path.join(os.path.expanduser('~'), 'Downloads', f"{youtube.title}.mp3")
+                mp3_file = os.path.join(os.path.expanduser('~'), 'Downloads', f"{sanitize_title(youtube.title)}.mp3")
 
             video.download(output_path=output_dir)
             os.replace(video.default_filename, mp3_file)
@@ -45,8 +45,22 @@ def convert_to_mp3(url, output_dir=None):
         print(f"an error occured: {e}")
 
 
+def sanitize_title(title):
+    invalid_chars = r'[\\/:*?"<>|]'
+    sanitized_title = re.sub(invalid_chars, '', title)
+    return sanitized_title
+
+
+def convert_youtube_playlist(url):
+    playlist = Playlist(url)
+
+    for video_url in playlist.video_urls:
+        convert_to_mp3(video_url)
+
+
 def process_file(file_path):
     youtube_regex = r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.?be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})'
+    youtube_playlist_regex = r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com)\/playlist\?(?:.*&)?list=([a-zA-Z0-9_-]+)'
     soundcloud_regex = r'(?:https?:\/\/)?(?:www\.)?(?:soundcloud\.com)\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)'
 
     with open(file_path, 'r') as file:
@@ -56,7 +70,9 @@ def process_file(file_path):
             if line.startswith("#"):
                 continue
 
-            if re.match(youtube_regex, link) or re.match(soundcloud_regex, link):
+            if re.match(youtube_playlist_regex, link):
+                convert_youtube_playlist(link)
+            elif re.match(youtube_regex, link) or re.match(soundcloud_regex, link):
                 convert_to_mp3(link)
             else:
                 print(f"ignoring unsupported url: {link}")
