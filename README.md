@@ -4,6 +4,7 @@ easy2use youtube and soundcloud mp3 converter.\
 direct links aswell as playlist links are both supported.
 
 ## Dependencies
+note: dependencies not needed for running the app
 - pytube
   - run `pip install pytube` in your terminal
 - sclib
