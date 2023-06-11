@@ -1,6 +1,7 @@
 # ytscConverter
 
-easy2use youtube and soundcloud mp3 converter
+easy2use youtube and soundcloud mp3 converter.\
+direct links aswell as playlist links are both supported.
 
 ### Dependencies
 - pytube
