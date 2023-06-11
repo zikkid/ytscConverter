@@ -24,19 +24,36 @@ def convert_to_mp3(url, output_dir=None):
         elif "soundcloud.com" in url:
             api = SoundcloudAPI()
 
-            track = api.resolve(url)
-            stream_url = track.STREAM_URL
+            if "sets" in url:
+                playlist = api.resolve(url)
+                for track in playlist.tracks:
+                    stream_url = track.STREAM_URL
 
-            if output_dir:
-                mp3_file = os.path.join(output_dir, f"{track.artist} - {track.title}.mp3")
+                    if output_dir:
+                        mp3_file = os.path.join(output_dir, f"{sanitize_title(track.artist)} - {sanitize_title(track.title)}.mp3")
+                    else:
+                        mp3_file = os.path.join(os.path.expanduser('~'), 'Downloads',
+                                                f"{sanitize_title(track.artist)} - {sanitize_title(track.title)}.mp3")
+
+                    response = requests.get(stream_url)
+                    with open(mp3_file, 'wb') as file:
+                        file.write(response.content)
+
+                    print(f"conversion complete: {mp3_file}")
             else:
-                mp3_file = os.path.join(os.path.expanduser('~'), 'Downloads', f"{track.artist} - {track.title}.mp3")
+                track = api.resolve(url)
+                stream_url = track.STREAM_URL
 
-            response = requests.get(stream_url)
-            with open(mp3_file, 'wb') as file:
-                file.write(response.content)
+                if output_dir:
+                    mp3_file = os.path.join(output_dir, f"{track.artist} - {track.title}.mp3")
+                else:
+                    mp3_file = os.path.join(os.path.expanduser('~'), 'Downloads', f"{track.artist} - {track.title}.mp3")
 
-            print(f"conversion complete: {mp3_file}")
+                response = requests.get(stream_url)
+                with open(mp3_file, 'wb') as file:
+                    file.write(response.content)
+
+                print(f"conversion complete: {mp3_file}")
         else:
             print("invalid link: unsupported platform")
     except RegexMatchError:
@@ -58,12 +75,12 @@ def convert_youtube_playlist(url):
         convert_to_mp3(video_url)
 
 
-def process_file(file_path):
+def process_links(link_path):
     youtube_regex = r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.?be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})'
     youtube_playlist_regex = r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com)\/playlist\?(?:.*&)?list=([a-zA-Z0-9_-]+)'
     soundcloud_regex = r'(?:https?:\/\/)?(?:www\.)?(?:soundcloud\.com)\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)'
 
-    with open(file_path, 'r') as file:
+    with open(link_path, 'r') as file:
         for line in file:
             link = line.strip()
 
@@ -78,5 +95,5 @@ def process_file(file_path):
                 print(f"ignoring unsupported url: {link}")
 
 
-file_path = './links.txt'
-process_file(file_path)
+links = './links.txt'
+process_links(links)
