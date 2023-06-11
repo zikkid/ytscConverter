@@ -5,6 +5,7 @@ from sclib import SoundcloudAPI
 import requests
 import re
 
+
 def convert_to_mp3(url, output_dir=None):
     try:
         if "youtube.com" in url:
@@ -43,10 +44,10 @@ def convert_to_mp3(url, output_dir=None):
     except Exception as e:
         print(f"an error occured: {e}")
 
+
 def process_file(file_path):
     youtube_regex = r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.?be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})'
     soundcloud_regex = r'(?:https?:\/\/)?(?:www\.)?(?:soundcloud\.com)\/([a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+)'
-
 
     with open(file_path, 'r') as file:
         for line in file:
@@ -59,6 +60,7 @@ def process_file(file_path):
                 convert_to_mp3(link)
             else:
                 print(f"ignoring unsupported url: {link}")
+
 
 file_path = './links.txt'
 process_file(file_path)
