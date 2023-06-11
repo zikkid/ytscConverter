@@ -11,6 +11,7 @@ direct links aswell as playlist links are both supported.
 
 ## How to use
 1. **Run the app**\
+this have not been tested for macOS, and may only be working on a Windows system.
 navigate to the folder `app`.\
 structure `links.txt` with linebreaks between every link, and run the app `main.exe`.\
 lines starting with "#" will be ignored, and can be used to structure for larger operations.\
